@@ -1,19 +1,44 @@
+import axios from "axios";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Button, KeyboardAvoidingView, Platform, Text, TextInput } from "react-native";
 
+type Stop = {
+  stop_id: number,
+  stop_name: string,
+  bus_number: number,
+  latitude: number,
+  longitude: number,
+  sequence_number: number
+}
+type Stops = Stop[];
+
 export default function Index() {
   const [routeNumber, setRouteNumber] = useState("");
 
-  const handleNavigate = () => {
+  const handleNavigate =async () => {
     if (routeNumber.trim() === "") {
       Alert.alert("Please enter a valid route number.");
       return;
     }
+    try{
+    const res = await axios.get(`http://10.209.200.95:3000/get/busbyno/${routeNumber}`);
+    if(res.data.success){
+      const stops = res.data.bus.stops;
+      const stopsParam = JSON.stringify(stops);
+      console.log("STOPS PARAM BELOW")
+      console.log(stopsParam);
+      router.push({pathname:"/track",params:{BUS_ID:routeNumber,stops:stopsParam}});
+    }
+    else{
+      Alert.alert("Error","Bus does not exist")
+    }}
+    catch(e){
+      Alert.alert("Error",e as string);
+    }
 
     // Optional: validate route number format here
 
-    router.push({pathname:"/track",params:{BUS_ID:routeNumber}});
   };
 
   return (
