@@ -1,3 +1,4 @@
+import CONSTANTS from "@/constants/constants";
 import axios from "axios";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -22,7 +23,7 @@ export default function Index() {
       return;
     }
     try{
-    const res = await axios.get(`http://10.209.200.95:3000/get/busbyno/${routeNumber}`);
+    const res = await axios.get(`${CONSTANTS.HOST}/get/busbyno/${routeNumber}`);
     if(res.data.success){
       const stops = res.data.bus.stops;
       const stopsParam = JSON.stringify(stops);
